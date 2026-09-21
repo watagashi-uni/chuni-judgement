@@ -1,0 +1,29 @@
+chuni-judgement
+Copyright (C) 2026 chuni-judgement contributors
+License: GNU Affero General Public License, version 3 (AGPL-3.0-only).
+
+Original open-source project: QingQiz/MarisaBot / Marisa.Frontend
+https://github.com/QingQiz/MarisaBot
+Copyright remains with QingQiz and the original contributors.
+Original license: GNU Affero General Public License version 3.
+C2S field conventions and note grouping are based on that project's
+src/components/chunithm/utils/parser.ts and BeatmapVisualizer components.
+
+Modifications, 2026-09-21:
+A standalone C2S parser and linear-time SVG/HTML renderer;
+static judgement calculation, per-note protection envelopes, legend and
+source attribution. This is a modified implementation, not an official
+MarisaBot release. No music charts, game assets or online data service are
+included. The original authors' rights are retained.
+
+Judgement behaviour reference:
+https://github.com/pingfanH/umiguri-re
+Commit 3aa8ebc53030cd178d5d90201e4ae2036f61c0bd
+The independently named numerical implementation follows the static
+per-lane eligibility rules and normal timing constants described by cw()
+and judgeWindows. No game bundle, art, sound or upstream source file is
+redistributed here. This project does not relicense those external works.
+
+Modified source: https://github.com/watagashi-uni/chuni-judgement
+Keep source attribution available when serving modified versions over a
+network. See LICENSE for the complete license and source-offer obligations.

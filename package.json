@@ -1,0 +1,33 @@
+{
+  "name": "@watagashi/chuni-judgement",
+  "version": "0.1.0",
+  "description": "Render C2S charts with static judgement windows",
+  "license": "AGPL-3.0-only",
+  "type": "commonjs",
+  "main": "src/index.js",
+  "bin": {
+    "chuni-judgement": "bin/render.cjs"
+  },
+  "files": [
+    "src",
+    "bin",
+    "LICENSE",
+    "NOTICE",
+    "README.md",
+    "server",
+    "public",
+    "Dockerfile",
+    "compose.yaml"
+  ],
+  "scripts": {
+    "test": "node --test test/*.test.cjs",
+    "start": "node server/index.js"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/watagashi-uni/chuni-judgement.git"
+  }
+}

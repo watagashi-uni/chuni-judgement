@@ -1,0 +1,9 @@
+.git
+node_modules
+test
+*.c2s
+*.svg
+*.png
+*.jpg
+
+charts/

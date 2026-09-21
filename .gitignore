@@ -1,0 +1,9 @@
+node_modules/
+/*.svg
+/*.html
+*.png
+*.jpg
+*.c2s
+coverage/
+
+charts/

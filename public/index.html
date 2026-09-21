@@ -1,0 +1,10 @@
+<!doctype html>
+<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>chuni-judgement · 判定图</title><link rel="stylesheet" href="/style.css"><script src="/app.js" defer></script></head>
+<body><main><header><div class="eyebrow">CHUNI JUDGEMENT</div><h1>看清每一次判定</h1><p>上传C2S 谱面，查看判定窗口与前后重叠保护。</p></header>
+<form id="render-form"><label class="upload" for="chart"><strong>选择谱面文件</strong><span id="filename">.c2s · 最大 2 MiB</span><input id="chart" type="file" accept=".c2s,.txt" required></label>
+<div class="options"><label>判定配置<select id="difficulty"><option value="hard">EXPERT / MASTER / ULTIMA</option><option value="easy">BASIC / ADVANCED</option></select></label><label>显示比例<select id="scale"><option value="560">标准 · 560 px/s</option><option value="350">紧凑 · 350 px/s</option><option value="800">放大 · 800 px/s</option></select></label><label class="check"><input id="protection" type="checkbox" checked>启用重叠保护</label><button id="render" type="submit">生成判定图</button></div></form>
+<div class="legend"><span class="jc">● JUSTICE CRITICAL</span><span class="justice">● JUSTICE</span><span class="attack">● ATTACK</span><span class="flick">▧ FLICK 触摸入口</span></div>
+<div class="result-bar"><p id="status" role="status" aria-live="polite">文件仅用于本次渲染，不保存到服务器。</p><a id="download" hidden download="judgement.svg">下载 SVG</a></div>
+<section id="preview" aria-label="判定图预览"><div id="empty">判定图将在这里显示<br><small>横向滚动查看整张谱面，下载 SVG 可无损放大。</small></div><img id="result" hidden alt="谱面判定范围图"></section>
+<p class="scope">显示地面起点的静态候选窗口。AIR、长条持续判定与 FLICK 移动历史未做输入模拟；不保证与街机规则完全一致。</p>
+<footer><a href="https://github.com/watagashi-uni/chuni-judgement">修改后源码 · chuni-judgement</a><a href="/LICENSE">AGPL-3.0</a><a href="https://github.com/QingQiz/MarisaBot">原开源项目 · MarisaBot</a><a href="/NOTICE">来源与修改声明</a></footer></main></body></html>

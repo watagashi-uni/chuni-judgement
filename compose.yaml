@@ -1,0 +1,15 @@
+services:
+  chuni-judgement:
+    build: .
+    ports:
+      - "127.0.0.1:3000:3000"
+    environment:
+      CHART_DIR: /charts
+    volumes:
+      - ./charts:/charts:ro
+    restart: unless-stopped
+    read_only: true
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    mem_limit: 768m
+    pids_limit: 64
