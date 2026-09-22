@@ -9,13 +9,38 @@
 (function (root) {
   'use strict';
   const ground = new Set(['TAP', 'CHR', 'HLD_H', 'SLD_H', 'FLK']);
-  const critical = n => n.type === 'CHR';
+  const longHead = n => n.type === 'HLD_H' || n.type === 'SLD_H';
+  const critical = n => n.type === 'CHR' || (longHead(n) && n.critical === true);
   const overlap = (a, b) => a.lane < b.lane + b.width && b.lane < a.lane + a.width;
   const inside = (lane, a, b) => lane >= Math.max(a.lane, b.lane) && lane < Math.min(a.lane + a.width, b.lane + b.width);
 
+  // Legacy C2S and rendered charts can represent a critical long-note head
+  // as HLD_H/SLD_H plus separate CHR notes. The union must cover the ENTIRE
+  // head at the same timestamp (chartParser's xk/Jg rule), not merely overlap.
+  function markCriticalHeads(input) {
+    const at = n => Number.isFinite(n.tick) ? `tick:${n.tick}` : `time:${n.time}`;
+    const coverage = new Map();
+    for (const n of input) if (n.type === 'CHR') {
+      const key = at(n);
+      if (!coverage.has(key)) coverage.set(key, []);
+      coverage.get(key).push([n.lane, n.lane + n.width]);
+    }
+    for (const ranges of coverage.values()) ranges.sort((a, b) => a[0] - b[0]);
+    return input.map(n => {
+      if (!longHead(n) || n.critical === true) return {...n};
+      let coveredTo = n.lane;
+      for (const [left, right] of coverage.get(at(n)) || []) {
+        if (left > coveredTo) break;
+        coveredTo = Math.max(coveredTo, right);
+        if (coveredTo >= n.lane + n.width) return {...n, critical: true};
+      }
+      return {...n};
+    });
+  }
+
   function protect(input, easy = false) {
     const jc = 2 / 60, attack = (easy ? 6 : 5) / 60;
-    const notes = input.filter(n => ground.has(n.type)).map(n => ({...n, early: Array(16).fill(Infinity), late: Array(16).fill(-Infinity), miss: 0})).sort((a, b) => a.time - b.time);
+    const notes = markCriticalHeads(input).filter(n => ground.has(n.type)).map(n => ({...n, early: Array(16).fill(Infinity), late: Array(16).fill(-Infinity), miss: 0})).sort((a, b) => a.time - b.time);
     // Pass 1: earlier notes restrict the later note's early edge.
     for (let i = 0; i < notes.length; ++i) {
       const b = notes[i];
@@ -74,7 +99,7 @@
     return ranges.map(([grade, from, to]) => ({grade, from: Math.max(from, lo), to: Math.min(to, hi)})).filter(b => b.to > b.from);
   }
 
-  const api = {protect, bands, ground};
+  const api = {protect, bands, ground, markCriticalHeads};
   if (typeof module !== 'undefined' && module.exports) module.exports = api;
   root.NewchartJudgement = api;
 })(globalThis);

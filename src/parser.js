@@ -76,6 +76,6 @@ function parseC2S(text) {
       measure++;
     }
   }
-  return {resolution,tempos,notes:unique,holds,slides,airPaths,beats,endTick,duration:toSeconds(endTick),warnings:[...warnings],toSeconds};
+  return {resolution,tempos,notes:require('./judgement.js').markCriticalHeads(unique),holds,slides,airPaths,beats,endTick,duration:toSeconds(endTick),warnings:[...warnings],toSeconds};
 }
 module.exports={parseC2S};

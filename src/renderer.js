@@ -52,7 +52,7 @@ function renderSvg(input, options={}) {
     for(const n of chart.notes)if(n.time>=start-.02&&n.time<stop+.02) {
       const nx=x+n.lane*10,ny=y(n.time),w=n.width*10;
       const groundColors={TAP:'#ff6376',CHR:'#ffe320',FLK:'#77baff',MNE:'#b633cd',HLD_H:'#ff913b',HLD_T:'#ffbd66',SLD_H:'#ff913b',SLD_T:'#68f3fa'};
-      if(groundColors[n.type])chunks.push(`<rect x="${nx+.5}" y="${ny-3}" width="${Math.max(0,w-1)}" height="6" rx="2" fill="${groundColors[n.type]}"/>`);
+      if(groundColors[n.type])chunks.push(`<rect x="${nx+.5}" y="${ny-3}" width="${Math.max(0,w-1)}" height="6" rx="2" fill="${n.critical ? groundColors.CHR : groundColors[n.type]}"/>`);
       else if(['AIR','AUR','AUL','ADW','ADR','ADL'].includes(n.type)) {
         const down=n.type.startsWith('AD');chunks.push(`<path d="M${nx} ${ny+(down?-10:10)}L${nx+w/2} ${ny+(down?4:-4)}L${nx+w} ${ny+(down?-10:10)}" fill="none" stroke="${down?'#fb8bd2':'#71ed82'}" stroke-width="3"/>`);
       } else chunks.push(`<rect x="${nx}" y="${ny-2}" width="${w}" height="4" fill="#d592fa"/>`);

@@ -49,9 +49,37 @@ if (repo) test('300 seeded mixed charts match upstream cw() across all 16 lanes'
  for(let trial=0;trial<300;trial++) {
   let time=0;const input=Array.from({length:25},()=>{time+=Math.floor(rand()*12)/120;const lane=Math.floor(rand()*16);return note(['TAP','CHR','HLD_H','SLD_H','FLK'][Math.floor(rand()*5)],time,lane,1+Math.floor(rand()*(16-lane)));});
   const easy=trial%2===0;
-  const reference=input.map(n=>({Fi:n.type,od:n.time,ou:n.lane,Le:n.width,Jg:0,jg:Array(16).fill(Infinity),Hg:Array(16).fill(-Infinity),yw:0}));
+  const reference=input.map(n=>({Fi:n.type,od:n.time,ou:n.lane,Le:n.width,Jg:['HLD_H','SLD_H'].includes(n.type) && Array.from({length:n.width},(_,i)=>n.lane+i).every(lane=>input.some(c=>c.type==='CHR'&&c.time===n.time&&c.lane<=lane&&c.lane+c.width>lane)) ? 1 : 0,jg:Array(16).fill(Infinity),Hg:Array(16).fill(-Infinity),yw:0}));
   cw.call({yc:{$g:reference}},{Ra:{Kb:2/60,Mb:(easy?6:5)/60}});
   const result=M.protect(input,easy);
   result.forEach((n,i)=>{assert.deepEqual(n.early,reference[i].jg);assert.deepEqual(n.late,reference[i].Hg);assert.equal(n.miss,reference[i].yw);});
  }
+});
+
+test('critical covering a long head makes every lane JC and uses critical protection', () => {
+ for (const type of ['HLD_H','SLD_H']) {
+  const input=[note(type,1,0,8),note('CHR',1,0,4),note('CHR',1,4,4),note('TAP',1.05,6,4)];
+  const head=M.protect(input)[0];
+  assert.equal(head.type,type);assert.equal(head.critical,true);
+  for(let lane=0;lane<8;lane++)assert.deepEqual(M.bands(head,lane).map(b=>b.grade),['JC']);
+  near(M.bands(head,0)[0].to,5/60); // Critical non-overlap region stays wide.
+  near(M.bands(head,7)[0].to,.025); // Actual overlap remains protected.
+  assert.equal(input[0].critical,undefined); // No caller mutation.
+ }
+});
+test('partial coverage, gaps, adjacent notes and different times do not promote a hold', () => {
+ const head=note('HLD_H',1,0,8);
+ for(const criticals of [[note('CHR',1,0,4)],[note('CHR',1,0,3),note('CHR',1,4,4)],[note('CHR',1,8,8)],[note('CHR',1.001,0,8)]]) {
+  const n=M.protect([head,...criticals]).find(n=>n.type==='HLD_H');
+  assert.notEqual(n.critical,true);assert.ok(M.bands(n,0).some(b=>b.grade==='JUSTICE'));
+ }
+});
+test('a wider critical covers the full head but does not promote TAP or HOLD tail', () => {
+ const input=[note('HLD_H',1,4,4),note('CHR',1,0,16),note('TAP',1,4,4),note('HLD_T',1,4,4)];
+ const result=M.markCriticalHeads(input);
+ assert.equal(result[0].critical,true);assert.equal(result[2].critical,undefined);assert.equal(result[3].critical,undefined);
+});
+test('raw tick identity prevents false matches between rounded display times', () => {
+ const [n]=M.markCriticalHeads([{...note('HLD_H',1),tick:96},{...note('CHR',1),tick:97}]);
+ assert.equal(n.critical,undefined);
 });

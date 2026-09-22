@@ -23,3 +23,8 @@ test('render contains legend and modified source; metadata cannot become markup'
 test('invalid input is rejected',()=>{
  for(const s of ['opaqueBase64==', 'BPM_DEF\t0',base+'TAP\t0\t0\t15\t4'])assert.throws(()=>parseC2S(s));
 });
+
+test('legacy HOLD plus CHR and split critical coverage produce critical heads',()=>{
+ const c=parseC2S(base+'HLD\t106\t192\t4\t4\t48\nCHR\t106\t192\t4\t4\tUP\nHLD\t120\t168\t0\t8\t408\nCHR\t120\t168\t0\t4\tUP\nCHR\t120\t168\t4\t4\tUP');
+ const heads=c.notes.filter(n=>n.type==='HLD_H');assert.equal(heads.length,2);assert.ok(heads.every(n=>n.critical===true));
+});
